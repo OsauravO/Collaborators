@@ -7,6 +7,7 @@ import { useDispatch, useSelector } from 'react-redux';
 import { toast } from 'sonner';
 import { useLoginMutation } from '../redux/slices/api/authApiSlice';
 import { setCredentials } from '../redux/slices/authSlice';
+import Loading from '../components/Loader';
 
 const Login = () => {
   const {user} = useSelector((state) => state.auth);
@@ -31,6 +32,7 @@ const Login = () => {
     user && navigate('/dashboard');
   }
   , [user]);
+  
   return (
     <div className='w-full min-h-screen flex items-center justify-center flex-col lg:flex-row bg-[#f3f4f6]'>
       <div className='w-full md:w-auto flex gap-0 md:gap-40 flex-col md:flex-row items-center justify-center'>
@@ -94,11 +96,11 @@ const Login = () => {
                 Forget Password?
               </span>
 
-              <Button
+              {isLoading ? (<Loading/>) : (<Button
                 type='submit'
                 label='Submit'
                 className='w-full h-10 bg-blue-700 text-white rounded-full'
-              />
+              />)}
             </div>
           </form>
         </div>
