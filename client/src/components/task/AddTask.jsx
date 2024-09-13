@@ -10,6 +10,8 @@ import Button from "../Button";
 import {getStorage, ref, getDownloadURL, uploadBytesResumable, getStream,} from "firebase/storage"
 import { app } from "../../utils/firebase";
 import { useCrateTaskMutation, useUpdateTaskMutation } from "../../redux/slices/api/taskApiSlice";
+import { toast } from "sonner"
+import { dateFormatter } from "../../utils";
 
 const LISTS = ["TODO", "IN PROGRESS", "COMPLETED"];
 const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
@@ -17,13 +19,22 @@ const PRIORIRY = ["HIGH", "MEDIUM", "NORMAL", "LOW"];
 const uploadedFileURLs = [];
 
 const AddTask = ({ open, setOpen, task }) => {
-
+  const defaultValues = {
+    title: task?.title || "",
+    date: dateFormatter(task?.date || new Date()),
+    team: [],
+    stage: "",
+    priority: "",
+    assets: [],
+  };
 
   const {
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm();
+  } = useForm({defaultValues});
+
+
   const [team, setTeam] = useState(task?.team || []);
   const [stage, setStage] = useState(task?.stage?.toUpperCase() || LISTS[0]);
   const [priority, setPriority] = useState(
@@ -37,7 +48,42 @@ const AddTask = ({ open, setOpen, task }) => {
   const URLS = task?.assets ? [...task.assets] : [];
 
 
-  const submitHandler = () => {};
+  const submitHandler = async (data) => {
+    for(const file of assets){
+      setUploading(true);
+      try {
+        await uploadFile(file);
+      } catch (error) {
+        console.error("Error uploading the file", error.message);
+        return;
+      } finally {
+        setUploading(false);
+      }
+    }
+
+    try {
+      const newData = {
+        ...data,
+        assets: [...URLS, ...uploadedFileURLs],
+        team,
+        stage,
+        priority,
+      };
+
+      const res = task?._id
+      ? await updateTask({ ...newData,_id: task._id }).unwrap() 
+      : await createTask(newData).unwrap();
+
+      toast.success(res.message);
+
+      setTimeout(() => {
+        setOpen(false);
+      }, 500);
+    } catch (err) {
+      console.log(err);
+      toast.error(err?.data?.message || err.error);
+    }
+  };
 
   const handleSelect = (e) => {
     setAssets(e.target.files);
