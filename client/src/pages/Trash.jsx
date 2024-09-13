@@ -13,6 +13,9 @@ import Button from "../components/Button";
 import { PRIOTITYSTYELS, TASK_TYPE } from "../utils";
 import AddUser from "../components/AddUser";
 import ConfirmatioDialog from "../components/Dialogs";
+import { useDeleteRestoreTaskMutation, useGetAllTaskQuery } from "../redux/slices/api/taskApiSlice";
+import Loading from "../components/Loader";
+import { toast } from "sonner";
 
 const ICONS = {
   high: <MdKeyboardDoubleArrowUp />,
@@ -27,11 +30,48 @@ const Trash = () => {
   const [type, setType] = useState("delete");
   const [selected, setSelected] = useState("");
 
-  const {data, isLoading} =useGetAllTaskQuery({
+  const {data, isLoading, refetch} =useGetAllTaskQuery({
     strQuery: "", 
     isTrashed: "true",
     search: "",
   })
+
+  const [deleteRestoreTask] = useDeleteRestoreTaskMutation();
+
+  const deleteRestoreHandler = async () => {
+    try {
+      let res;
+
+      switch (type) {
+        case "delete":
+          res = await deleteRestoreTask({ id: selected, actionType: "delete" }).unwrap();
+          break;
+
+        case "deleteAll":
+          res = await deleteRestoreTask({ id: "", actionType: "deleteAll" }).unwrap();
+          break;
+
+        case "restore":
+          res = await deleteRestoreTask({ id: selected, actionType: "restore" }).unwrap();
+          break;
+
+        case "restoreAll":
+          res = await deleteRestoreTask({ id: "", actionType: "restoreAll" }).unwrap();
+          break;
+
+      }
+      toast.success(res?.message);
+
+      setTimeout(() => {
+        setOpenDialog(false);
+        refetch();
+      }, 500);
+
+    } catch (err) {
+        console.log(err);
+        toast.error(err?.data?.message || err.error);
+    }
+  }
 
   const deleteAllClick = () => {
     setType("deleteAll");
@@ -57,6 +97,13 @@ const Trash = () => {
     setMsg("Do you want to restore the selected item?");
     setOpenDialog(true);
   };
+
+  if(isLoading)
+    return(
+      <div className="py-10">
+        <Loading />
+      </div>
+    );
 
   const TableHeader = () => (
     <thead className='border-b border-gray-300'>
@@ -135,7 +182,7 @@ const Trash = () => {
             <table className='w-full mb-5'>
               <TableHeader />
               <tbody>
-                {tasks?.map((tk, id) => (
+                {data?.tasks?.map((tk, id) => (
                   <TableRow key={id} item={tk} />
                 ))}
               </tbody>
