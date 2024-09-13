@@ -7,7 +7,6 @@ import ModalWrapper from "./ModalWrapper";
 import Textbox from "./Textbox";
 import { useChangePasswordMutation } from "../redux/slices/api/userApiSlice";
 import { toast } from "sonner";
-import { set } from "mongoose";
 
 const ChangePassword = ({ open, setOpen }) => {
     const {

@@ -6,7 +6,6 @@ import { HiBellAlert } from "react-icons/hi2";
 import { IoIosNotificationsOutline } from "react-icons/io";
 import { Link } from "react-router-dom";
 import { useGetNotificationsQuery, useMarkNotiAsReadMutation } from "../redux/slices/api/userApiSlice";
-import { set } from "mongoose";
 import ViewNotification from "./ViewNotification";
 
 const data = [
