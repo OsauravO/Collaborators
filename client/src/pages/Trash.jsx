@@ -27,6 +27,12 @@ const Trash = () => {
   const [type, setType] = useState("delete");
   const [selected, setSelected] = useState("");
 
+  const {data, isLoading} =useGetAllTaskQuery({
+    strQuery: "", 
+    isTrashed: "true",
+    search: "",
+  })
+
   const deleteAllClick = () => {
     setType("deleteAll");
     setMsg("Do you want to permenantly delete all items?");
