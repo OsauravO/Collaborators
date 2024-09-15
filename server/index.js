@@ -17,7 +17,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "task-manager-gamma-red-23.vercel.app"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "task-manager-frontend-six-delta.vercel.app"],
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   })
