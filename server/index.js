@@ -17,7 +17,7 @@ const app = express();
 
 app.use(
   cors({
-    origin: ["http://localhost:3000", "http://localhost:3001", "https://escanor-task-manager.netlify.app"],
+    origin: ["http://localhost:3000", "http://localhost:3001", "task-manager-gamma-red-23.vercel.app"],
     methods: ["GET", "POST", "DELETE", "PUT"],
     credentials: true,
   })
